@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Phone,
   Play,
@@ -30,8 +30,7 @@ const HOUSE_TYPES = [
     id: "36",
     name: "Tipe 36",
     subName: "36/72",
-    image:
-      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&q=80&w=800",
+    image: "/images/grand-ender-unit-front.jpeg",
     specs: {
       luasTanah: "72 m²",
       luasBangunan: "36 m²",
@@ -48,8 +47,7 @@ const HOUSE_TYPES = [
     id: "45",
     name: "Tipe 45",
     subName: "45/90",
-    image:
-      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800",
+    image: "/images/grand-ender-unit-alt.jpeg",
     specs: {
       luasTanah: "90 m²",
       luasBangunan: "45 m²",
@@ -66,8 +64,7 @@ const HOUSE_TYPES = [
     id: "55",
     name: "Tipe 55",
     subName: "55/105",
-    image:
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=800",
+    image: "/images/5Home.jpeg",
     specs: {
       luasTanah: "105 m²",
       luasBangunan: "55 m²",
@@ -85,7 +82,7 @@ const HOUSE_TYPES = [
     name: "Tipe 60",
     subName: "60/120",
     image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800",
+      "https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=2070&auto=format&fit=crop",
     specs: {
       luasTanah: "120 m²",
       luasBangunan: "60 m²",
@@ -102,8 +99,7 @@ const HOUSE_TYPES = [
     id: "70",
     name: "Tipe 70",
     subName: "70/140",
-    image:
-      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800",
+    image: "/images/2Home.jpeg",
     specs: {
       luasTanah: "140 m²",
       luasBangunan: "70 m²",
@@ -121,11 +117,85 @@ const HOUSE_TYPES = [
 // --- Components ---
 
 const Navbar = () => {
+  const [active, setActive] = useState("beranda");
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+
+      const sections = [
+        "beranda",
+        "tipe-rumah",
+        "spesifikasi",
+        "persyaratan",
+        "gallery",
+        "kontak",
+      ];
+
+      let current = "";
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // Adjust offset to account for navbar height
+          if (rect.top <= 150) {
+            current = section;
+          }
+        }
+      }
+
+      if (current && current !== active) {
+        setActive(current);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [active]);
+
+  const scrollTo = (e, id) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      const offset = 80; // Navbar height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+      setActive(id);
+    }
+  };
+
+  const navLinks = [
+    { id: "beranda", label: "Beranda" },
+    { id: "tipe-rumah", label: "Promo Unit" },
+    { id: "spesifikasi", label: "Spesifikasi" },
+    { id: "persyaratan", label: "Persyaratan" },
+    { id: "gallery", label: "Gallery" },
+  ];
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-brand-dark/5">
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled
+          ? "bg-white/90 backdrop-blur-md border-b border-brand-dark/5 shadow-sm py-0"
+          : "bg-transparent border-transparent py-2"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          <div className="flex items-center gap-2">
+          <div
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={(e) => scrollTo(e, "beranda")}
+          >
             <div className="w-10 h-10 bg-brand-navy flex items-center justify-center rounded-lg">
               <Home className="text-brand-gold w-6 h-6" />
             </div>
@@ -140,45 +210,26 @@ const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-8">
-            <a
-              href="#"
-              className="text-sm font-medium text-brand-gold border-b-2 border-brand-gold pb-1"
-            >
-              Beranda
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-brand-navy/60 hover:text-brand-navy transition-colors"
-            >
-              Tipe Rumah
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-brand-navy/60 hover:text-brand-navy transition-colors"
-            >
-              Perbandingan
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-brand-navy/60 hover:text-brand-navy transition-colors"
-            >
-              Fasilitas
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-brand-navy/60 hover:text-brand-navy transition-colors"
-            >
-              Lokasi
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-brand-navy/60 hover:text-brand-navy transition-colors"
-            >
-              Tentang Kami
-            </a>
+            {navLinks.map((link) => (
+              <a
+                key={link.id}
+                href={`#${link.id}`}
+                onClick={(e) => scrollTo(e, link.id)}
+                className={`text-sm font-medium transition-colors pb-1 ${
+                  active === link.id
+                    ? "text-brand-gold border-b-2 border-brand-gold"
+                    : "text-brand-navy/60 hover:text-brand-navy border-b-2 border-transparent"
+                }`}
+              >
+                {link.label}
+              </a>
+            ))}
           </div>
 
-          <button className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold/90 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all shadow-lg shadow-brand-gold/20">
+          <button
+            onClick={(e) => scrollTo(e, "kontak")}
+            className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold/90 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all shadow-lg shadow-brand-gold/20"
+          >
             <Phone className="w-4 h-4" />
             <span>Hubungi Kami</span>
           </button>
@@ -190,7 +241,7 @@ const Navbar = () => {
 
 const Hero = () => {
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden">
+    <section id="beranda" className="relative pt-32 pb-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-template-columns-[1.2fr_1fr] lg:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -201,21 +252,30 @@ const Hero = () => {
             <span className="text-brand-gold font-medium tracking-widest uppercase text-xs mb-4 block">
               Grand Ender Residence
             </span>
-            <h1 className="text-5xl lg:text-7xl font-serif text-brand-navy leading-[1.1] mb-6">
-              Bandingkan Semua <br />
-              <span className="italic font-normal">Tipe Rumah</span> <br />
-              Grand Ender Residence
+            <h1 className="text-2xl lg:text-6xl font-serif text-brand-navy leading-[1.1] mb-6">
+              Temukan Tipe Rumah <br />
+              <span className="italic font-normal">Modern Minimalis</span>{" "}
+              <br />
+              <span className="text-brand-gold"> Bernuansa Asri</span>
             </h1>
             <p className="text-brand-navy/60 text-lg mb-10 max-w-lg leading-relaxed">
-              Temukan hunian terbaik untuk Anda dan keluarga. Bandingkan
-              spesifikasi, ukuran, harga, dan fasilitas dengan mudah dalam satu
-              halaman.
+              Miliki rumah subsidi impian Anda sekarang! Berada di lokasi yang
+              strategis dengan fasilitas lengkap, dekat dengan kawasan pabrik,
+              tempat ibadah, puskesmas, dan akses tol.
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <button className="bg-brand-navy text-white px-8 py-4 rounded-xl font-medium flex items-center gap-3 hover:bg-brand-navy/90 transition-all shadow-xl shadow-brand-navy/20">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  document
+                    .getElementById("tipe-rumah")
+                    ?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="bg-brand-navy text-white px-8 py-4 rounded-xl font-medium flex items-center gap-3 hover:bg-brand-navy/90 transition-all shadow-xl shadow-brand-navy/20"
+              >
                 <Layout className="w-5 h-5" />
-                Mulai Perbandingan
+                Lihat Promo Unit
               </button>
               <button className="bg-white text-brand-navy border border-brand-navy/10 px-8 py-4 rounded-xl font-medium flex items-center gap-3 hover:bg-brand-cream transition-all">
                 <Play className="w-5 h-5 fill-brand-navy" />
@@ -230,9 +290,9 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.2 }}
             className="relative"
           >
-            <div className="aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl relative">
+            <div className="aspect-[4/4] rounded-3xl overflow-hidden shadow-2xl relative">
               <img
-                src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200"
+                src="/images/9Home.jpeg"
                 alt="Main House"
                 className="w-full h-full object-cover"
               />
@@ -251,7 +311,7 @@ const Hero = () => {
               </div>
               <div>
                 <div className="text-sm font-bold text-brand-navy leading-none">
-                  Luxury Living
+                  Grand Ender
                 </div>
                 <div className="text-xs text-brand-navy/50 mt-1">
                   Prime Location
@@ -270,13 +330,10 @@ const Hero = () => {
 
 const Features = () => {
   const items = [
-    {
-      icon: <ShieldCheck className="w-6 h-6" />,
-      title: "Developer Terpercaya",
-    },
-    { icon: <Star className="w-6 h-6" />, title: "Kualitas Terbaik" },
     { icon: <MapPin className="w-6 h-6" />, title: "Lokasi Strategis" },
-    { icon: <BadgePercent className="w-6 h-6" />, title: "Harga Bersaing" },
+    { icon: <ShieldCheck className="w-6 h-6" />, title: "One Gate System" },
+    { icon: <Trees className="w-6 h-6" />, title: "Pagar Keliling" },
+    { icon: <Car className="w-6 h-6" />, title: "10 Menit Toll Kanci" },
   ];
 
   return (
@@ -306,28 +363,26 @@ const Features = () => {
   );
 };
 
-const ComparisonSection = () => {
-  const [selectedIds, setSelectedIds] = useState([
-    "36",
-    "45",
-    "55",
-    "60",
-    "70",
-  ]);
-
-  const toggleSelection = (id) => {
-    if (selectedIds.includes(id)) {
-      if (selectedIds.length > 1)
-        setSelectedIds(selectedIds.filter((i) => i !== id));
-    } else {
-      setSelectedIds([...selectedIds, id]);
-    }
-  };
-
-  const selectedHouses = HOUSE_TYPES.filter((h) => selectedIds.includes(h.id));
+const UnitPromoSection = () => {
+  const units = [
+    {
+      id: "36",
+      name: "DENAH (TYPE 36/60)",
+      subName: "Rumah Subsidi",
+      image: "/images/grand-ender-floor-plan.jpeg",
+      desc: "Desain minimalis dengan lingkungan yang asri, cocok untuk keluarga baru yang mencari hunian nyaman dan strategis.",
+    },
+    {
+      id: "30",
+      name: "UNIT RUKO TYPE 30",
+      subName: "Komersial",
+      image: "/images/grand-ender-unit-alt.jpeg",
+      desc: "Lokasi strategis di pintu masuk perumahan, ideal untuk tempat usaha dan investasi masa depan Anda.",
+    },
+  ];
 
   return (
-    <section className="py-24 bg-brand-cream relative">
+    <section id="tipe-rumah" className="py-24 bg-brand-cream relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -337,79 +392,236 @@ const ComparisonSection = () => {
           className="text-center mb-16"
         >
           <span className="text-brand-gold font-medium tracking-widest uppercase text-xs mb-3 block">
-            Tipe Rumah
+            Pilihan Unit
           </span>
           <h2 className="text-4xl md:text-5xl text-brand-navy mb-4">
-            Pilih Tipe Rumah yang Ingin Dibandingkan
+            Promo Unit & Ruko
           </h2>
         </motion.div>
 
-        {/* Carousel / Selection */}
-        <div className="relative mb-20">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {HOUSE_TYPES.map((house, idx) => (
-              <motion.div
-                key={house.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                whileHover={{ y: -5 }}
-                onClick={() => toggleSelection(house.id)}
-                className={`cursor-pointer rounded-2xl overflow-hidden border-2 transition-all p-4 ${
-                  selectedIds.includes(house.id)
-                    ? "border-brand-navy bg-white shadow-xl"
-                    : "border-transparent bg-white/50"
-                }`}
-              >
-                <div className="aspect-video rounded-xl overflow-hidden mb-4 relative">
-                  <img
-                    src={house.image}
-                    alt={house.name}
-                    className="w-full h-full object-cover"
-                  />
-                  {selectedIds.includes(house.id) && (
-                    <div className="absolute top-2 right-2 bg-brand-navy text-white rounded-full p-1 border-2 border-white">
-                      <Check className="w-3 h-3" />
-                    </div>
-                  )}
-                </div>
-                <div className="text-center">
-                  <div
-                    className={`font-serif text-lg ${selectedIds.includes(house.id) ? "text-brand-navy" : "text-brand-navy/40"}`}
-                  >
-                    {house.name}
-                  </div>
-                  <div className="text-[10px] uppercase tracking-widest text-brand-gold/70 mt-1 font-medium">
-                    {house.subName}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+        <div className="space-y-12">
+          {/* DENAH HIGHLIGHT */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6 }}
+            className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-brand-dark/5 flex flex-col md:flex-row items-stretch"
+          >
+            <div className="w-full md:w-1/2 p-6 md:p-10 bg-brand-cream/30 flex justify-center items-center">
+              <img
+                src="/images/grand-ender-floor-plan.jpeg"
+                alt="Denah Type 36/60"
+                className="w-full max-w-md object-contain drop-shadow-xl hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+            <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+              <span className="text-brand-gold font-bold tracking-widest uppercase text-xs mb-2 block">
+                Rumah Subsidi
+              </span>
+              <h3 className="text-3xl md:text-4xl font-serif text-brand-navy mb-4">
+                DENAH (TYPE 36/60)
+              </h3>
+              <p className="text-brand-navy/70 leading-relaxed mb-8 text-lg">
+                Desain tata ruang yang sangat efisien dan nyaman, memisahkan
+                area istirahat dan area berkumpul keluarga secara cerdas.
+                Dilengkapi lahan sisa untuk taman atau pengembangan.
+              </p>
 
-          <button className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-brand-navy hover:text-white transition-all border border-brand-dark/5 hidden lg:flex">
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <button className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-brand-navy hover:text-white transition-all border border-brand-dark/5 hidden lg:flex">
-            <ChevronRight className="w-5 h-5" />
-          </button>
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="bg-brand-cream/50 p-4 rounded-xl border border-brand-dark/5 flex flex-col items-center text-center">
+                  <span className="text-2xl font-bold text-brand-navy mb-1">
+                    36 m²
+                  </span>
+                  <span className="text-[10px] text-brand-navy/60 uppercase tracking-widest font-bold">
+                    Luas Bangunan
+                  </span>
+                </div>
+                <div className="bg-brand-cream/50 p-4 rounded-xl border border-brand-dark/5 flex flex-col items-center text-center">
+                  <span className="text-2xl font-bold text-brand-navy mb-1">
+                    60 m²
+                  </span>
+                  <span className="text-[10px] text-brand-navy/60 uppercase tracking-widest font-bold">
+                    Luas Tanah
+                  </span>
+                </div>
+                <div className="bg-brand-cream/50 p-4 rounded-xl border border-brand-dark/5 flex flex-col items-center text-center">
+                  <span className="text-2xl font-bold text-brand-navy mb-1">
+                    2
+                  </span>
+                  <span className="text-[10px] text-brand-navy/60 uppercase tracking-widest font-bold">
+                    Kamar Tidur
+                  </span>
+                </div>
+                <div className="bg-brand-cream/50 p-4 rounded-xl border border-brand-dark/5 flex flex-col items-center text-center">
+                  <span className="text-2xl font-bold text-brand-navy mb-1">
+                    1
+                  </span>
+                  <span className="text-[10px] text-brand-navy/60 uppercase tracking-widest font-bold">
+                    Kamar Mandi
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* RUKO HIGHLIGHT */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-brand-dark/5 flex flex-col md:flex-row-reverse items-stretch"
+          >
+            <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-auto md:min-h-[400px] relative overflow-hidden bg-brand-cream/10">
+              <img
+                src="/images/grand-ender-unit-alt.jpeg"
+                alt="Unit Ruko Type 30"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+              />
+            </div>
+            <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+              <span className="text-brand-gold font-bold tracking-widest uppercase text-xs mb-2 block">
+                Peluang Bisnis
+              </span>
+              <h3 className="text-3xl md:text-4xl font-serif text-brand-navy mb-4">
+                UNIT RUKO TYPE 30
+              </h3>
+              <p className="text-brand-navy/70 leading-relaxed mb-8 text-lg">
+                Solusi cerdas untuk tempat usaha Anda. Berada tepat di titik
+                terdepan perumahan yang memastikan trafik tinggi dan eksposur
+                maksimal bagi bisnis Anda.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-brand-cream/50 p-4 rounded-xl border border-brand-dark/5 flex flex-col items-center text-center">
+                  <span className="text-2xl font-bold text-brand-navy mb-1">
+                    30 m²
+                  </span>
+                  <span className="text-[10px] text-brand-navy/60 uppercase tracking-widest font-bold">
+                    Luas Bangunan
+                  </span>
+                </div>
+                <div className="bg-brand-cream/50 p-4 rounded-xl border border-brand-dark/5 flex flex-col items-center text-center">
+                  <span className="text-2xl font-bold text-brand-navy mb-1">
+                    Strategis
+                  </span>
+                  <span className="text-[10px] text-brand-navy/60 uppercase tracking-widest font-bold">
+                    Posisi Usaha
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
+      </div>
+    </section>
+  );
+};
 
-        {/* COMPARISON TABLE */}
+const SpesifikasiSection = () => {
+  const specs = [
+    { label: "Pondasi", value: "Pasangan Batu Belah" },
+    { label: "Struktur", value: "Beton Bertulang" },
+    { label: "Dinding", value: "Bata Merah (Plester Aci Fin. Cat)" },
+    { label: "Lantai", value: "Keramik 40x40" },
+    { label: "Rangka Atap", value: "Baja Ringan" },
+    { label: "Penutup Atap", value: "Genteng Metal" },
+    { label: "Plafond", value: "GRC Board" },
+    { label: "Kusen", value: "Kayu Mahoni / Setara" },
+    { label: "Sanitair", value: "Closet Jongkok" },
+    { label: "Air", value: "Sumur Bor" },
+    { label: "Listrik", value: "1300 kVa" },
+    { label: "Carport", value: "Rabat Beton" },
+  ];
+
+  return (
+    <section id="spesifikasi" className="py-24 bg-white relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-10"
+          className="text-center mb-16"
         >
           <span className="text-brand-gold font-medium tracking-widest uppercase text-xs mb-3 block">
-            Perbandingan Tipe Rumah
+            Kualitas Premium
           </span>
-          <h2 className="text-3xl md:text-4xl text-brand-navy">
-            Bandingkan Spesifikasi & Fasilitas
+          <h2 className="text-4xl md:text-5xl text-brand-navy mb-4">
+            Spesifikasi Bangunan
           </h2>
+        </motion.div>
+
+        <div className="bg-brand-cream/30 rounded-[32px] p-8 md:p-12 border border-brand-dark/5 shadow-xl max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-x-12 gap-y-6">
+            {specs.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: idx * 0.05 }}
+                className="flex items-start gap-4 border-b border-brand-dark/5 pb-4 last:border-0 md:last:border-b"
+              >
+                <div className="mt-1 bg-brand-gold/20 text-brand-gold rounded-full p-1 shrink-0">
+                  <Check className="w-4 h-4 stroke-[3px]" />
+                </div>
+                <div>
+                  <div className="text-sm font-bold text-brand-navy mb-1">
+                    {item.label}
+                  </div>
+                  <div className="text-brand-navy/60 text-sm leading-snug">
+                    {item.value}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const PersyaratanKPRSection = () => {
+  const requirements = [
+    { item: "F.C KTP Suami Istri", k: true, w: true },
+    { item: "F.C Kartu Keluarga", k: true, w: true },
+    { item: "F.C Buku Nikah / Akte Cerai", k: true, w: true },
+    { item: "F.C NPWP", k: true, w: true },
+    { item: "Surat Ket. Belum Memiliki Rumah", k: true, w: true },
+    { item: "Pas Photo Berwarna (3x4)", k: true, w: true },
+    { item: "Surat Keterangan Bekerja", k: true, w: false },
+    { item: "Slip Gaji 3 Bulan Terakhir", k: true, w: false },
+    { item: "Surat Keterangan Usaha", k: false, w: true },
+    { item: "Photo Usaha", k: false, w: true },
+    { item: "Denah Lokasi Usaha", k: false, w: true },
+    { item: "Buku Tabungan", k: true, w: true },
+    { item: "Rekening Koran Bulan Terakhir", k: true, w: true },
+    { item: "Materai 10.000", k: true, w: true },
+  ];
+
+  return (
+    <section id="persyaratan" className="py-24 bg-brand-cream relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <span className="text-brand-gold font-medium tracking-widest uppercase text-xs mb-3 block">
+            Dukungan Bank BTN
+          </span>
+          <h2 className="text-4xl md:text-5xl text-brand-navy mb-4">
+            Persyaratan KPR
+          </h2>
+          <p className="text-brand-navy/60 max-w-2xl mx-auto">
+            Uang Tanda Jadi (Booking Fee) Tidak dapat Ditarik Kembali Dengan
+            Alasan Apapun.
+          </p>
         </motion.div>
 
         <motion.div
@@ -417,185 +629,99 @@ const ComparisonSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.8 }}
-          className="bg-white rounded-[32px] overflow-hidden shadow-2xl border border-brand-dark/5 mb-12"
+          className="bg-white rounded-[32px] overflow-hidden shadow-2xl border border-brand-dark/5 max-w-4xl mx-auto"
         >
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
+            <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr className="bg-brand-navy text-white">
-                  <th className="p-8 w-1/5 font-serif text-xl border-r border-white/10 uppercase tracking-widest">
-                    Spesifikasi
+                <tr className="bg-brand-navy text-white text-sm tracking-widest uppercase">
+                  <th className="p-6 font-medium border-r border-white/10 w-3/5">
+                    Dokumen Persyaratan
                   </th>
-                  {selectedHouses.map((house) => (
-                    <th
-                      key={house.id}
-                      className="p-8 text-center border-r border-white/10 last:border-r-0"
-                    >
-                      <div className="flex flex-col items-center gap-3">
-                        <img
-                          src={house.image}
-                          className="w-16 h-12 object-cover rounded-lg shadow-inner"
-                          alt="thumb"
-                        />
-                        <div>
-                          <div className="font-serif text-lg leading-tight">
-                            {house.name}
-                          </div>
-                          <div className="text-[10px] text-brand-gold font-sans tracking-widest mt-1 opacity-80">
-                            {house.subName}
-                          </div>
-                        </div>
-                      </div>
-                    </th>
-                  ))}
+                  <th className="p-6 font-medium text-center border-r border-white/10 w-1/5">
+                    Karyawan
+                  </th>
+                  <th className="p-6 font-medium text-center w-1/5">
+                    Wiraswasta
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-dark/5">
-                {[
-                  {
-                    label: "Luas Tanah",
-                    key: "luasTanah",
-                    icon: <Maximize className="w-4 h-4" />,
-                  },
-                  {
-                    label: "Luas Bangunan",
-                    key: "luasBangunan",
-                    icon: <Home className="w-4 h-4" />,
-                  },
-                  {
-                    label: "Kamar Tidur",
-                    key: "kamarTidur",
-                    icon: <Layout className="w-4 h-4" />,
-                  },
-                  {
-                    label: "Kamar Mandi",
-                    key: "kamarMandi",
-                    icon: <Bath className="w-4 h-4" />,
-                  },
-                  {
-                    label: "Carport",
-                    key: "carport",
-                    icon: <Car className="w-4 h-4" />,
-                  },
-                  {
-                    label: "Ruang Tamu",
-                    key: "ruangTamu",
-                    icon: <Users className="w-4 h-4" />,
-                    isBoolean: true,
-                  },
-                  {
-                    label: "Dapur",
-                    key: "dapur",
-                    icon: <Utensils className="w-4 h-4" />,
-                    isBoolean: true,
-                  },
-                  {
-                    label: "Taman",
-                    key: "taman",
-                    icon: <Trees className="w-4 h-4" />,
-                    isBoolean: true,
-                  },
-                  {
-                    label: "Harga Mulai",
-                    key: "hargaMulai",
-                    icon: <Award className="w-4 h-4" />,
-                    isGold: true,
-                  },
-                ].map((row, idx) => (
-                  <tr key={idx} className={row.isGold ? "bg-brand-gold/5" : ""}>
-                    <td className="p-6 text-sm font-semibold text-brand-navy border-r border-brand-dark/5 bg-brand-cream/30">
-                      <div className="flex items-center gap-3">
-                        <span className="text-brand-gold">{row.icon}</span>
-                        {row.label}
-                      </div>
+                {requirements.map((req, idx) => (
+                  <tr
+                    key={idx}
+                    className="hover:bg-brand-cream/30 transition-colors"
+                  >
+                    <td className="p-4 px-6 text-sm text-brand-navy border-r border-brand-dark/5 font-medium">
+                      {req.item}
                     </td>
-                    {selectedHouses.map((house) => (
-                      <td
-                        key={house.id}
-                        className={`p-6 text-center border-r border-brand-dark/5 last:border-r-0 text-sm ${row.isGold ? "text-brand-gold font-bold text-lg" : "text-brand-navy/70 font-medium"}`}
-                      >
-                        {row.isBoolean ? (
-                          <div className="flex justify-center">
-                            {house.specs[row.key] ? (
-                              <div className="w-6 h-6 bg-brand-gold/20 rounded-full flex items-center justify-center text-brand-gold">
-                                <Check className="w-4 h-4 stroke-[3px]" />
-                              </div>
-                            ) : (
-                              "-"
-                            )}
-                          </div>
-                        ) : (
-                          house.specs[row.key]
-                        )}
-                      </td>
-                    ))}
+                    <td className="p-4 text-center border-r border-brand-dark/5">
+                      {req.k ? (
+                        <Check className="w-5 h-5 mx-auto text-brand-gold" />
+                      ) : (
+                        <span className="text-brand-navy/20">-</span>
+                      )}
+                    </td>
+                    <td className="p-4 text-center">
+                      {req.w ? (
+                        <Check className="w-5 h-5 mx-auto text-brand-gold" />
+                      ) : (
+                        <span className="text-brand-navy/20">-</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="flex justify-center"
-        >
-          <button className="bg-brand-navy text-white px-10 py-4 rounded-xl flex items-center gap-3 hover:bg-brand-gold transition-all shadow-xl shadow-brand-navy/10 transform hover:scale-105">
-            <Layout className="w-5 h-5" />
-            Lihat Detail Lengkap
-          </button>
-        </motion.div>
       </div>
     </section>
   );
 };
 
-const InfoGrid = () => {
-  const cards = [
-    {
-      icon: <MapPin className="w-8 h-8" />,
-      title: "Lokasi Strategis",
-      desc: "Dekat pusat kota, sekolah, rumah sakit & pusat perbelanjaan",
-    },
-    {
-      icon: <Layout className="w-8 h-8" />,
-      title: "Fasilitas Lengkap",
-      desc: "One Gate System, Security 24 Jam, CCTV & Taman Hijau",
-    },
-    {
-      icon: <ShieldCheck className="w-8 h-8" />,
-      title: "Legalitas Aman",
-      desc: "Sertifikat Hak Milik (SHM) & IMB Lengkap",
-    },
-    {
-      icon: <BadgePercent className="w-8 h-8" />,
-      title: "Promo Menarik",
-      desc: "Dapatkan promo spesial & kemudahan pembayaran",
-    },
+const Gallery = () => {
+  const images = [
+    "/images/1Home.jpeg",
+    "/images/2Home.jpeg",
+    "/images/4Home.jpeg",
+    "/images/9Home.jpeg",
   ];
 
   return (
-    <section className="py-24 bg-white">
+    <section id="gallery" className="py-24 bg-brand-cream/30 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {cards.map((card, idx) => (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
+          <span className="text-brand-gold font-medium tracking-widest uppercase text-xs mb-3 block">
+            Gallery
+          </span>
+          <h2 className="text-4xl md:text-5xl text-brand-navy mb-4">
+            Lihat Lebih Dekat
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {images.map((img, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
               whileHover={{ y: -10 }}
-              className="p-8 rounded-[32px] bg-brand-cream/50 border border-brand-dark/5 hover:bg-white hover:shadow-2xl transition-all"
+              className="aspect-square rounded-3xl overflow-hidden shadow-xl"
             >
-              <div className="text-brand-gold mb-6">{card.icon}</div>
-              <h3 className="text-xl text-brand-navy mb-3">{card.title}</h3>
-              <p className="text-sm text-brand-navy/50 leading-relaxed">
-                {card.desc}
-              </p>
+              <img
+                src={img}
+                alt={`Gallery ${idx + 1}`}
+                className="w-full h-full object-cover"
+              />
             </motion.div>
           ))}
         </div>
@@ -606,7 +732,10 @@ const InfoGrid = () => {
 
 const CTA = () => {
   return (
-    <section className="bg-brand-navy py-20 relative overflow-hidden">
+    <section
+      id="kontak"
+      className="bg-brand-navy py-20 relative overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-center gap-12">
           <motion.div
@@ -709,8 +838,10 @@ export default function App() {
       <main>
         <Hero />
         <Features />
-        <ComparisonSection />
-        <InfoGrid />
+        <UnitPromoSection />
+        <SpesifikasiSection />
+        <PersyaratanKPRSection />
+        <Gallery />
         <CTA />
       </main>
       <Footer />

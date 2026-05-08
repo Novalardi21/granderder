@@ -20,8 +20,11 @@ import {
   Award,
   Users,
   BadgePercent,
+  Menu,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import Image from "next/image";
 
 // --- Data ---
 
@@ -119,6 +122,7 @@ const HOUSE_TYPES = [
 const Navbar = () => {
   const [active, setActive] = useState("beranda");
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -215,26 +219,91 @@ const Navbar = () => {
                 key={link.id}
                 href={`#${link.id}`}
                 onClick={(e) => scrollTo(e, link.id)}
-                className={`text-sm font-medium transition-colors pb-1 ${
+                className={`relative text-sm font-medium transition-colors pb-1 ${
                   active === link.id
-                    ? "text-brand-gold border-b-2 border-brand-gold"
-                    : "text-brand-navy/60 hover:text-brand-navy border-b-2 border-transparent"
+                    ? "text-brand-gold"
+                    : "text-brand-navy/60 hover:text-brand-navy"
                 }`}
               >
                 {link.label}
+                {active === link.id && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand-gold"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
               </a>
             ))}
           </div>
 
+          <div className="hidden md:block">
+            <button
+              onClick={(e) => scrollTo(e, "kontak")}
+              className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold/90 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all shadow-lg shadow-brand-gold/20"
+            >
+              <Phone className="w-4 h-4" />
+              <span>Hubungi Kami</span>
+            </button>
+          </div>
+
           <button
-            onClick={(e) => scrollTo(e, "kontak")}
-            className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold/90 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all shadow-lg shadow-brand-gold/20"
+            className="md:hidden p-2 text-brand-navy hover:bg-brand-cream rounded-lg transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <Phone className="w-4 h-4" />
-            <span>Hubungi Kami</span>
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
           </button>
         </div>
       </div>
+
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white border-b border-brand-dark/5 overflow-hidden"
+          >
+            <div className="px-4 pt-2 pb-6 space-y-2 shadow-xl">
+              {navLinks.map((link) => (
+                <a
+                  key={link.id}
+                  href={`#${link.id}`}
+                  onClick={(e) => {
+                    scrollTo(e, link.id);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`block px-4 py-3 rounded-xl text-base font-medium ${
+                    active === link.id
+                      ? "bg-brand-gold/10 text-brand-gold"
+                      : "text-brand-navy/70 hover:bg-brand-cream hover:text-brand-navy"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              ))}
+              <div className="pt-4 mt-2 border-t border-brand-dark/5">
+                <button
+                  onClick={(e) => {
+                    scrollTo(e, "kontak");
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex w-full justify-center items-center gap-2 bg-brand-gold hover:bg-brand-gold/90 text-white px-6 py-3.5 rounded-xl text-base font-medium transition-all shadow-lg shadow-brand-gold/20"
+                >
+                  <Phone className="w-5 h-5" />
+                  <span>Hubungi Kami</span>
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
@@ -252,19 +321,19 @@ const Hero = () => {
             <span className="text-brand-gold font-medium tracking-widest uppercase text-xs mb-4 block">
               Grand Ender Residence
             </span>
-            <h1 className="text-2xl lg:text-6xl font-serif text-brand-navy leading-[1.1] mb-6">
+            <h1 className="text-4xl lg:text-6xl font-serif text-brand-navy leading-[1.1] mb-6">
               Temukan Tipe Rumah <br />
               <span className="italic font-normal">Modern Minimalis</span>{" "}
               <br />
               <span className="text-brand-gold"> Bernuansa Asri</span>
             </h1>
-            <p className="text-brand-navy/60 text-lg mb-10 max-w-lg leading-relaxed">
+            <p className="text-brand-navy/60 text-base md:text-lg mb-10 max-w-lg leading-relaxed">
               Miliki rumah subsidi impian Anda sekarang! Berada di lokasi yang
               strategis dengan fasilitas lengkap, dekat dengan kawasan pabrik,
               tempat ibadah, puskesmas, dan akses tol.
             </p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4">
               <button
                 onClick={(e) => {
                   e.preventDefault();
@@ -272,12 +341,12 @@ const Hero = () => {
                     .getElementById("tipe-rumah")
                     ?.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="bg-brand-navy text-white px-8 py-4 rounded-xl font-medium flex items-center gap-3 hover:bg-brand-navy/90 transition-all shadow-xl shadow-brand-navy/20"
+                className="w-full sm:w-auto justify-center bg-brand-navy text-white px-8 py-4 rounded-xl font-medium flex items-center gap-3 hover:bg-brand-navy/90 transition-all shadow-xl shadow-brand-navy/20"
               >
                 <Layout className="w-5 h-5" />
                 Lihat Promo Unit
               </button>
-              <button className="bg-white text-brand-navy border border-brand-navy/10 px-8 py-4 rounded-xl font-medium flex items-center gap-3 hover:bg-brand-cream transition-all">
+              <button className="w-full sm:w-auto justify-center bg-white text-brand-navy border border-brand-navy/10 px-8 py-4 rounded-xl font-medium flex items-center gap-3 hover:bg-brand-cream transition-all">
                 <Play className="w-5 h-5 fill-brand-navy" />
                 Lihat Video
               </button>
@@ -290,13 +359,15 @@ const Hero = () => {
             transition={{ duration: 1, delay: 0.2 }}
             className="relative"
           >
-            <div className="aspect-[4/4] rounded-3xl overflow-hidden shadow-2xl relative">
-              <img
+            <div className="aspect-4/4 rounded-3xl overflow-hidden shadow-2xl relative">
+              <Image
                 src="/images/9Home.jpeg"
                 alt="Main House"
+                width={1080}
+                height={1080}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/20 to-transparent"></div>
+              <div className="absolute inset-0 bg-linear-to-t from-brand-navy/20 to-transparent"></div>
             </div>
 
             {/* Floating Badges */}
@@ -339,7 +410,7 @@ const Features = () => {
   return (
     <section className="bg-white py-12 border-y border-brand-dark/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {items.map((item, idx) => (
             <motion.div
               key={idx}
@@ -369,14 +440,14 @@ const UnitPromoSection = () => {
       id: "36",
       name: "DENAH (TYPE 36/60)",
       subName: "Rumah Subsidi",
-      image: "/images/grand-ender-floor-plan.jpeg",
+      image: "/images/6Home.jpeg",
       desc: "Desain minimalis dengan lingkungan yang asri, cocok untuk keluarga baru yang mencari hunian nyaman dan strategis.",
     },
     {
       id: "30",
       name: "UNIT RUKO TYPE 30",
       subName: "Komersial",
-      image: "/images/grand-ender-unit-alt.jpeg",
+      image: "/images/1Home.jpeg",
       desc: "Lokasi strategis di pintu masuk perumahan, ideal untuk tempat usaha dan investasi masa depan Anda.",
     },
   ];
@@ -409,9 +480,11 @@ const UnitPromoSection = () => {
             className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-brand-dark/5 flex flex-col md:flex-row items-stretch"
           >
             <div className="w-full md:w-1/2 p-6 md:p-10 bg-brand-cream/30 flex justify-center items-center">
-              <img
-                src="/images/grand-ender-floor-plan.jpeg"
+              <Image
+                src="/images/6Home.jpeg"
                 alt="Denah Type 36/60"
+                width={1080}
+                height={1080}
                 className="w-full max-w-md object-contain drop-shadow-xl hover:scale-105 transition-transform duration-700"
               />
             </div>
@@ -473,10 +546,12 @@ const UnitPromoSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="bg-white rounded-3xl overflow-hidden shadow-2xl border border-brand-dark/5 flex flex-col md:flex-row-reverse items-stretch"
           >
-            <div className="w-full md:w-1/2 aspect-[4/3] md:aspect-auto md:min-h-[400px] relative overflow-hidden bg-brand-cream/10">
-              <img
-                src="/images/grand-ender-unit-alt.jpeg"
+            <div className="w-full md:w-1/2 aspect-4/3 md:aspect-auto md:min-h-[400px] relative overflow-hidden bg-brand-cream/10">
+              <Image
+                src="/images/1Home.jpeg"
                 alt="Unit Ruko Type 30"
+                width={1080}
+                height={1080}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>
@@ -632,7 +707,7 @@ const PersyaratanKPRSection = () => {
           className="bg-white rounded-[32px] overflow-hidden shadow-2xl border border-brand-dark/5 max-w-4xl mx-auto"
         >
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[600px]">
+            <table className="w-full text-left border-collapse min-w-[600px] text-sm md:text-base">
               <thead>
                 <tr className="bg-brand-navy text-white text-sm tracking-widest uppercase">
                   <th className="p-6 font-medium border-r border-white/10 w-3/5">
@@ -717,10 +792,12 @@ const Gallery = () => {
               whileHover={{ y: -10 }}
               className="aspect-square rounded-3xl overflow-hidden shadow-xl"
             >
-              <img
+              <Image
                 src={img}
                 alt={`Gallery ${idx + 1}`}
                 className="w-full h-full object-cover"
+                width={1080}
+                height={1080}
               />
             </motion.div>
           ))}

@@ -117,7 +117,7 @@ const HOUSE_TYPES = [
   },
 ];
 
-// --- Components ---
+// --- Components ----
 
 const Navbar = () => {
   const [active, setActive] = useState("beranda");
